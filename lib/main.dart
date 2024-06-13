@@ -89,6 +89,8 @@ class _ChatPageState extends State<ChatPage> {
   late IO.Socket socket;
   final TextEditingController _messageController = TextEditingController();
   List<String> messages = [];
+  List<String> users = [];
+  String? selectedUser;
 
   @override
   void initState() {
@@ -115,18 +117,29 @@ class _ChatPageState extends State<ChatPage> {
       });
     });
 
+    socket.on('user list', (userList) {
+      setState(() {
+        users = List<String>.from(userList);
+      });
+    });
+
     socket.onDisconnect((_) {
       print('Disconnected from server');
     });
   }
 
   void sendMessage() {
-    if (_messageController.text.isNotEmpty) {
-      socket.emit('chat message', '${widget.userName}: ${_messageController.text}');
+    if (_messageController.text.isNotEmpty && selectedUser != null) {
+      socket.emit('private message', {
+        'sender': widget.userName,
+        'recipient': selectedUser,
+        'message': _messageController.text,
+      });
       _messageController.clear();
     }
   }
 
+  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,6 +162,23 @@ class _ChatPageState extends State<ChatPage> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                Expanded(
+                  child: DropdownButton<String>(
+                    hint: const Text('Select user'),
+                    value: selectedUser,
+                    items: users.map((String user) {
+                      return DropdownMenuItem<String>(
+                        value: user,
+                        child: Text(user),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedUser = newValue;
+                      });
+                    },
+                  ),
+                ),
                 Expanded(
                   child: TextField(
                     controller: _messageController,

@@ -1,1 +1,11 @@
+[06/12/2024] - [0.10.0] - Updated Packages:
+
+1. FEATURE: Initially we had an open communication room, any user could enter the room and type a text, and that way everyone would see the message sent, now we isolate conversations by users.
+
+- Problems that still need attention:
+
+1. Improve the style of the users section available to start a conversation, in contrast to active chat.
+2. View the message sent by the users themselves.
+
+
 [06/12/2024] - [0.1.0] - Initial Commit.
